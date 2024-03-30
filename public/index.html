@@ -1,0 +1,48 @@
+<!-- public/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task Manager</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <h1>Task Manager</h1>
+  <div id="tasks"></div>
+
+  <script>
+    async function fetchTasks() {
+      const response = await fetch('/api/tasks');
+      const tasks = await response.json();
+      const tasksDiv = document.getElementById('tasks');
+      tasksDiv.innerHTML = '';
+      tasks.forEach(task => {
+        const taskDiv = document.createElement('div');
+        taskDiv.innerHTML = `
+          <h3>${task.title}</h3>
+          <p>${task.description}</p>
+        `;
+        tasksDiv.appendChild(taskDiv);
+      });
+    }
+
+    async function addTask() {
+      const title = prompt('Enter task title:');
+      const description = prompt('Enter task description:');
+      if (title && description) {
+        await fetch('/api/tasks', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ title, description })
+        });
+        fetchTasks();
+      }
+    }
+
+    fetchTasks();
+  </script>
+</body>
+</html>
